@@ -14,6 +14,8 @@ This is ESP32 OBD2 Gauge for vehicles that are compatible with obd2
 ## Software:
 - Arduino IDE 2.3.2 + ESP32 arduino core 2.0.17
 - modified TFT_eSPI library 2.5.43
+- JPEGDecoder library
+- XPT2046_Touchscreen library
 
 ## Hardware
 - ESP32 TFT2.8 320x240 with "RESISTIVE" touch board.

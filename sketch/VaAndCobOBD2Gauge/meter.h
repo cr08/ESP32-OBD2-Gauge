@@ -401,9 +401,13 @@ void getAB(String elm_rsp) {  //41 05 2A 3C 01>
 }//getAB
 /*-------------------------------*/
 //check engine status if off then turn off gauge
-// void engine_onoff(float data, uint8_t pid) {  //use pcm volt
-// //check if pid is 010C eng speed and value = 0
-// //String t = pidList[pid] + " - " + (String)value;
+void engine_onoff(float data, uint8_t pid) {  //use pcm volt
+//check if pid is 010C eng speed and value = 0
+//String t = pidList[pid] + " - " + (String)value;
+
+//Defaulting this to 0 at all times to effectively disable auto on-off function
+engine_off_count = 0;  //reset
+
 // if (pidList[pid] == "0142") { //pis = 010C engine speed RPM
 
 //   int compare = ecu_off_volt/data;
@@ -436,7 +440,7 @@ void getAB(String elm_rsp) {  //41 05 2A 3C 01>
 
 //     }//if engine_off_count>20
 //   }//if PID = "010C"
-// }
+}
 /*-------------------------------*/
 //coolant volt oiltemp vaporpressure TFT Load
 // {"01051","01421","015C1","01321","221E1C1","01041"};
@@ -455,7 +459,8 @@ void updateMeter(uint8_t pidNo, String response) {  //update parameter on screen
   switch (formula) {                  //choose fomula
     case 0: data = A * 0.145; break;  //psi
     case 1: data = A - 40; break;     //temp
-    case 2: data = A * 100.0 / 255; break;
+    // case 2: data = A * 100.0 / 255; break;
+    case 2: data = (((A * 256) + B) * (1 / 5)) / 100; break; //HVB SOC %
     case 3: data = (256 * A + B) / 4.0; break;
     case 4: data = (256 * A + B) / 1000.0; break;
     case 5: 
