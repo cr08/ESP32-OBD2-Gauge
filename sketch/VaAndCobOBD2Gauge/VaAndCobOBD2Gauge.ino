@@ -173,8 +173,10 @@ String deviceName[8] = { "", "", "", "", "", "", "", "" };                  //di
 String deviceAddr[8] = { "", "", "", "", "", "", "", "" };                  //discover BT addr
 uint8_t btDeviceCount = 0;                                                  //discovered bluetooth devices counter
 #define BT_DISCOVER_TIME 5000                                               //bluetooth discoery time
-esp_bd_addr_t client_addr = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };         //obdII mac addr
-esp_bd_addr_t recent_client_addr = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };  //keep last btaddr in RTC memory
+
+//OBD adapter Bluetooth info - Fill out
+esp_bd_addr_t client_addr = { 0x00, 0x1d, 0xa5, 0x00, 0x02, 0x40 };         //obdII mac addr
+esp_bd_addr_t recent_client_addr = { 0x00, 0x1d, 0xa5, 0x00, 0x02, 0x40 };  //keep last btaddr in RTC memory
 const String client_name = "OBDII";                                         //adaptor name to search
 esp_spp_sec_t sec_mask = ESP_SPP_SEC_NONE;                                  // or ESP_SPP_SEC_ENCRYPT|ESP_SPP_SEC_AUTHENTICATE to request pincode confirmation
 esp_spp_role_t role = ESP_SPP_ROLE_SLAVE;                                   // or ESP_SPP_ROLE_MASTER
