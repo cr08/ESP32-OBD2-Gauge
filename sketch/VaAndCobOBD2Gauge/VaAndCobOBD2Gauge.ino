@@ -18,8 +18,8 @@ About opening logo image and goodbye image.
 */
 
 //--- FLAG SETTING ----- for debugging
-//#define TERMINAL //temrinal mode (no gauge)
-//#define SERIAL_DEBUG //to show data in serial port
+#define TERMINAL //temrinal mode (no gauge)
+#define SERIAL_DEBUG //to show data in serial port
 //#define SKIP_CONNECTION //skip elm327 BT connection to view meter
 //#define TEST_DTC //test DTC
 
