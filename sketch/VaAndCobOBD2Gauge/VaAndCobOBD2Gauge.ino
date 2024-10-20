@@ -81,15 +81,24 @@ skip = delay reading 0 - 3; 3 = max delay read
 digit = want to show digit or not
 warn = default warning value
 */
-const String pidConfig[7][9] = {
+const String pidConfig[8][9] = {
   //[pid][data]
-  { "HVB SOC", "%", "224801", "2", "0", "100", "0", "1", "100" },    //0 = 0104
+  { "ENG Load", "%", "0104", "2", "0", "100", "0", "0", "80" },      //0 = 0104
   { "ECT", "`C", "0105", "1", "0", "120", "3", "0", "99" },          //1 = 0105
   { "MAP", "psi", "010B", "0", "0", "40", "0", "1", "35" },          //2 = 010B
   { "ENG SPD", "rpm", "010C", "3", "0", "5000", "0", "0", "4000" },  //3 = 010C
   { "PCM Volt", "volt", "0142", "4", "0", "16", "1", "1", "15" },    //4 = 0142
+#ifdef FORD_T5
+  { "IAT", "`C", "010F", "1", "0", "120", "3", "0", "99" },  //5 = 015C
+#else
   { "Oil Temp", "`C", "015C", "1", "0", "120", "3", "0", "99" },     //5 = 015C
-  { "Trans Temp", "`C", "221E1C", "5", "0", "120", "3", "1", "99" }  //6 = 221E1C for FORD T6+
+#endif
+#ifdef FORD_T5
+  { "TFT", "`C", "221674", "6", "0", "120", "3", "0", "99" },  //6 = 221674 for FORD T5
+#else
+  { "Trans Temp", "`C", "221E1C", "5", "0", "120", "3", "1", "99" },  //6 = 221E1C for FORD T6+
+#endif
+  { "HVB SOC", "%", "224801", "7", "0", "100", "3", "1", "100"} //7 = HVB SOC
 };
 
 //barometric pressure "0133"  turbo boost = map - bp;
@@ -110,11 +119,12 @@ set up meter here which pid to use on each cell
 4 - pcm volt
 5 - oil Temp
 6 - trans Temp
+7 - HVB SOC
 */
 const uint8_t pidInCell[8][7] = {
   //[layout][cellNo]
   //the last cell must be 3 (engine speed) to check engine off
-  { 0, 2, 3, 1, 5, 6, 4 },  //layout 0 -> 6 cell {load,map,engspd,coolant,oil,tft,pcmvolt
+  { 7, 2, 3, 1, 5, 6, 4 },  //layout 0 -> 6 cell {load,map,engspd,coolant,oil,tft,pcmvolt
   { 0, 2, 3, 1, 5, 6, 4 },  //layout 1 -> 6 cell {load,map,engspd,coolant,oil,tft,pcmvolt
   { 0, 2, 3, 1, 5, 6, 4 },  //layout 2 -> 6 cell {load,map,engspd,coolant,oil,tft,pcmvolt
   { 1, 5, 6, 3, 2, 4, 4 },  //layout 3 -> 5 cell {cooland,oil,tft,map,pcmvolt,pcmvolt}
@@ -164,12 +174,9 @@ String deviceName[8] = { "", "", "", "", "", "", "", "" };                  //di
 String deviceAddr[8] = { "", "", "", "", "", "", "", "" };                  //discover BT addr
 uint8_t btDeviceCount = 0;                                                  //discovered bluetooth devices counter
 #define BT_DISCOVER_TIME 5000                                               //bluetooth discoery time
-
-//OBD adapter Bluetooth info - Fill out
 esp_bd_addr_t client_addr = { 0x00, 0x1d, 0xa5, 0x00, 0x02, 0x40 };         //obdII mac addr
 esp_bd_addr_t recent_client_addr = { 0x00, 0x1d, 0xa5, 0x00, 0x02, 0x40 };  //keep last btaddr in RTC memory
 const String client_name = "OBDII";                                         //adaptor name to search
-
 esp_spp_sec_t sec_mask = ESP_SPP_SEC_NONE;                                  // or ESP_SPP_SEC_ENCRYPT|ESP_SPP_SEC_AUTHENTICATE to request pincode confirmation
 esp_spp_role_t role = ESP_SPP_ROLE_SLAVE;                                   // or ESP_SPP_ROLE_MASTER
 bool foundOBD2 = false;

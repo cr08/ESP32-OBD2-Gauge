@@ -404,42 +404,38 @@ void getAB(String elm_rsp) {  //41 05 2A 3C 01>
 void engine_onoff(float data, uint8_t pid) {  //use pcm volt
 //check if pid is 010C eng speed and value = 0
 //String t = pidList[pid] + " - " + (String)value;
+if (pidList[pid] == "0142") { //pis = 010C engine speed RPM
 
-//Defaulting this to 0 at all times to effectively disable auto on-off function
-engine_off_count = 0;  //reset
+  int compare = ecu_off_volt/data;
+  if (compare > 0)  //check lower voltage
+    engine_off_count++;
+  else
+    engine_off_count = 0;  //reset
+  if (engine_off_count > 20) {  //engine is stop
+    if(pref.getUShort("layout",false) != layout) {//if current layout not NVR load layout
+      pref.putUShort("layout", layout);//save current layout to NVR
+    }      
+    show_spiffs_jpeg_image("/mypic.jpg", 0, 0);//show mypic
+    ledcWriteTone(buzzerChannel,3136);
+    delay(100);
+    ledcWriteTone(buzzerChannel,2637);
+    delay(100);
+    ledcWriteTone(buzzerChannel,2093);
+    delay(100);
+    ledcWriteTone(buzzerChannel,0);
+    for (int i=255;i>0;i--) {//fading effect
+      ledcWrite(backlightChannel, i);//full bright
+      delay(10);
+    }//turn off backlight
+    BTSerial.print("ATLP\r");//set ELM327 to Low Power
+    BTSerial.disconnect();//disconnect bluetooth
+    tft.fillScreen(TFT_BLACK);
+    tft.writecommand(0x10); //TFT sleep
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_27,LOW); //wake when button pressed
+    esp_deep_sleep_start();//sleep shutdown backlight auto off with esp32
 
-// if (pidList[pid] == "0142") { //pis = 010C engine speed RPM
-
-//   int compare = ecu_off_volt/data;
-//   if (compare > 0)  //check lower voltage
-//     engine_off_count++;
-//   else
-//     engine_off_count = 0;  //reset
-//   if (engine_off_count > 20) {  //engine is stop
-//     if(pref.getUShort("layout",false) != layout) {//if current layout not NVR load layout
-//       pref.putUShort("layout", layout);//save current layout to NVR
-//     }      
-//     show_spiffs_jpeg_image("/mypic.jpg", 0, 0);//show mypic
-//     ledcWriteTone(buzzerChannel,3136);
-//     delay(100);
-//     ledcWriteTone(buzzerChannel,2637);
-//     delay(100);
-//     ledcWriteTone(buzzerChannel,2093);
-//     delay(100);
-//     ledcWriteTone(buzzerChannel,0);
-//     for (int i=255;i>0;i--) {//fading effect
-//       ledcWrite(backlightChannel, i);//full bright
-//       delay(10);
-//     }//turn off backlight
-//     BTSerial.print("ATLP\r");//set ELM327 to Low Power
-//     BTSerial.disconnect();//disconnect bluetooth
-//     tft.fillScreen(TFT_BLACK);
-//     tft.writecommand(0x10); //TFT sleep
-//     esp_sleep_enable_ext0_wakeup(GPIO_NUM_27,LOW); //wake when button pressed
-//     esp_deep_sleep_start();//sleep shutdown backlight auto off with esp32
-
-//     }//if engine_off_count>20
-//   }//if PID = "010C"
+    }//if engine_off_count>20
+  }//if PID = "010C"
 }
 /*-------------------------------*/
 //coolant volt oiltemp vaporpressure TFT Load
@@ -459,8 +455,7 @@ void updateMeter(uint8_t pidNo, String response) {  //update parameter on screen
   switch (formula) {                  //choose fomula
     case 0: data = A * 0.145; break;  //psi
     case 1: data = A - 40; break;     //temp
-    // case 2: data = A * 100.0 / 255; break;
-    case 2: data = (((A * 256) + B) * (1 / 5)) / 100; break; //HVB SOC %
+    case 2: data = A * 100.0 / 255; break;
     case 3: data = (256 * A + B) / 4.0; break;
     case 4: data = (256 * A + B) / 1000.0; break;
     case 5: 
@@ -472,6 +467,10 @@ void updateMeter(uint8_t pidNo, String response) {  //update parameter on screen
       data = (A*256+B)*5/72-18;
       if (data >150 || data <0) data = old_data[pidIndex];//check if data is outbound use old data
       break;
+
+    //HVB SOC calc
+    // case 7: data = (((A*256)+B)*(1/5))/100; break;
+    case 7: data = ((((A*256)+B)*(1/5)+0)/100); break;
     
       //more formula
   }  //switch fomula
