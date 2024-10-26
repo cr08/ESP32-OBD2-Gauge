@@ -18,7 +18,7 @@ About opening logo image and goodbye image.
 */
 
 //--- FLAG SETTING ----- for debugging
-#define TERMINAL //temrinal mode (no gauge)
+//#define TERMINAL //temrinal mode (no gauge)
 #define SERIAL_DEBUG //to show data in serial port
 //#define SKIP_CONNECTION //skip elm327 BT connection to view meter
 //#define TEST_DTC //test DTC
@@ -103,7 +103,7 @@ const String pidConfig[8][9] = {
 
 //barometric pressure "0133"  turbo boost = map - bp;
 //hold warning value
-String warningValue[7] = { "80", "99", "35", "4000", "15", "99", "99" };
+String warningValue[8] = { "80", "99", "35", "4000", "15", "99", "99", "100" };
 
 /*  User configuration here to change display 
       layout 0      layout 1       layout 2     layout 3      layout 4     layout 5

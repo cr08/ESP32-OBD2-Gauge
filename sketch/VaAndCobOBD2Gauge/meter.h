@@ -470,7 +470,7 @@ void updateMeter(uint8_t pidNo, String response) {  //update parameter on screen
 
     //HVB SOC calc
     // case 7: data = (((A*256)+B)*(1/5))/100; break;
-    case 7: data = ((((A*256)+B)*(1/5)+0)/100); break;
+    case 7: data = (A*256+B)/5/100; break;
     
       //more formula
   }  //switch fomula
